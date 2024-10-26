@@ -1,0 +1,32 @@
+/**
+ * Creates a throttled function that only invokes `func` at most once per every `limit` milliseconds.
+ * @param {Function} func - The function to throttle.
+ * @param {number} limit - The time interval (in milliseconds) to throttle the function calls.
+ * @returns {Function} - A new throttled function.
+ */
+function throttle(func, limit) {
+    let lastFunc;
+    let lastRan;
+
+    return function(...args) {
+        if (!lastRan) {
+            func(...args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = setTimeout(() => {
+                if ((Date.now() - lastRan) >= limit) {
+                    func(...args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
+    };
+}
+
+// Example usage:
+const logScroll = throttle(() => {
+    console.log('Scroll event triggered!');
+}, 200);
+
+window.addEventListener('scroll', logScroll);
